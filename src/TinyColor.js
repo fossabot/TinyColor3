@@ -265,14 +265,14 @@ exports.mix = function(color1, color2, amount) {
 };
 
 
-exports.readability = function(color1, color2) {
+function readability (color1, color2) {
 	let c1 = new tinycolor(color1),
 	    c2 = new tinycolor(color2);
 	return (Math.max(c1.getLuminance(),c2.getLuminance())+0.05) / (Math.min(c1.getLuminance(),c2.getLuminance())+0.05);
 };
 
-exports.isReadable = function(color1, color2, wcag2) {
-	let readability = new tinycolor.readability(color1, color2),
+function isReadable (color1, color2, wcag2) {
+	let readability = readability(color1, color2),
 	    out = false,
 	    wcag2Parms = validateWCAG2Parms(wcag2);
 	switch (wcag2Parms.level + wcag2Parms.size) {
@@ -301,7 +301,7 @@ exports.mostReadable = function(baseColor, colorList, args) {
 	size = args.size;
 
 	for (var i= 0; i < colorList.length ; i++) {
-		readability = new tinycolor.readability(baseColor, colorList[i]);
+		readability = readability(baseColor, colorList[i]);
 		if (readability > bestScore)
 			bestScore = readability,
 				bestColor = new tinycolor(colorList[i]);
