@@ -10,9 +10,6 @@
     "parser",
     "tinycolor"
   ],
-  "dependancies": [
-      "color-name-list": "7.30.0"
-  ],
   "author": "Jay Rizuri <jayrizuri@gmail.com> (http://samidb.xyz/)",
   "main": "./src/TinyColor.js",
   "engines": {
