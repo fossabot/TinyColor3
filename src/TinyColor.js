@@ -573,3 +573,4 @@ function inputToRGB(color) {
 		a: a
 	};
 }
+module.exports = TinyColor;
