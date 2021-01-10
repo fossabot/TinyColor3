@@ -1,0 +1,18 @@
+
+{
+  "version": "1.0.0",
+  "name": "tinycolor3",
+  "description": "Fast Color Parsing and Manipulation",
+  "url": "http://github.com/JayRizuri/TinyColor3",
+  "license": "MIT",
+  "keywords": [
+    "color",
+    "parser",
+    "tinycolor"
+  ],
+  "author": "Jay Rizuri <jayrizuri@gmail.com> (http://samidb.xyz/)",
+  "main": "./tinycolor.js",
+  "engines": {
+    "node": "*"
+  }
+}
