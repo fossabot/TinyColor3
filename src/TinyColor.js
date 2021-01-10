@@ -43,7 +43,7 @@ class TinyColor {
 		this._tc_id = tinyCounter++;
 		
 		this.brightness = (this.red * 299 + this.green * 587 + this.blue * 114) / 1000;
-		this.isDark = (this.brightness() < 128);
+		this.isDark = (this.brightness < 128);
 		this.isLight = (!this.isDark);
 		
 		this.hex = rgbToHex(this.red, this.green, this.blue);
