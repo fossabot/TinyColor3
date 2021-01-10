@@ -1,3 +1,5 @@
+const trimLeft = /^\s+/,
+      trimRight = /\s+$/,
 class TinyColor {
 	constructor() {
 	}
@@ -227,9 +229,9 @@ function lighten (color, amount) {
 function brighten(color, amount) {
 	amount = (amount === 0) ? 0 : (amount || 10);
 	let rgb = new tinycolor(color).toRgb();
-	rgb.r = mathMax(0, mathMin(255, rgb.r - mathRound(255 * - (amount / 100))));
-	rgb.g = mathMax(0, mathMin(255, rgb.g - mathRound(255 * - (amount / 100))));
-	rgb.b = mathMax(0, mathMin(255, rgb.b - mathRound(255 * - (amount / 100))));
+	rgb.r = Math.max(0, Math.min(255, rgb.r - Math.round(255 * - (amount / 100))));
+	rgb.g = Math.max(0, Math.min(255, rgb.g - Math.round(255 * - (amount / 100))));
+	rgb.b = Math.max(0, Math.min(255, rgb.b - Math.round(255 * - (amount / 100))));
 	return new tinycolor(rgb);
 }
 
@@ -240,9 +242,6 @@ function darken (color, amount) {
 	hsl.l = clamp01(hsl.l);
 	return new tinycolor(hsl);
 }
-
-// Spin takes a positive or negative amount within [-360, 360] indicating the change of hue.
-// Values outside of this range will be wrapped into this range.
 function spin(color, amount) {
 	let hsl = new tinycolor(color).toHsl(),
 	    hue = (hsl.h + amount) % 360;
@@ -250,11 +249,7 @@ function spin(color, amount) {
 	return new tinycolor(hsl);
 }
 
-// Combination Functions
-// ---------------------
-// Thanks to jQuery xColor for some of the ideas behind these
-// <https://github.com/infusion/jQuery-xcolor/blob/master/jquery.xcolor.js>
-
+// --- Combination Functions
 function complement(color) {
 	let hsl = new tinycolor(color).toHsl();
 	hsl.h = (hsl.h + 180) % 360;
@@ -272,8 +267,8 @@ function triad(color) {
 }
 
 function tetrad(color) {
-	var hsl = new tinycolor(color).toHsl();
-	var h = hsl.h;
+	let hsl = new tinycolor(color).toHsl(),
+	    h = hsl.h;
 	return [
 		new tinycolor(color),
 		new tinycolor({ h: (h + 90) % 360, s: hsl.s, l: hsl.l }),
@@ -283,8 +278,8 @@ function tetrad(color) {
 }
 
 function splitcomplement(color) {
-	var hsl = new tinycolor(color).toHsl();
-	var h = hsl.h;
+	let hsl = new tinycolor(color).toHsl(),
+	    h = hsl.h;
 	return [
 		new tinycolor(color),
 		new tinycolor({ h: (h + 72) % 360, s: hsl.s, l: hsl.l}),
@@ -296,9 +291,9 @@ function analogous(color, results, slices) {
 	results = results || 6;
 	slices = slices || 30;
 
-	var hsl = new tinycolor(color).toHsl();
-	var part = 360 / slices;
-	var ret = [new tinycolor(color)];
+	let hsl = new tinycolor(color).toHsl(),
+	    part = 360 / slices,
+	    ret = [new tinycolor(color)];
 
 	for (hsl.h = ((hsl.h - (part * results >> 1)) + 720) % 360; --results; ) {
 		hsl.h = (hsl.h + part) % 360;
@@ -309,70 +304,47 @@ function analogous(color, results, slices) {
 
 function monochromatic(color, results) {
 	results = results || 6;
-	var hsv = new tinycolor(color).toHsv();
-	var h = hsv.h, s = hsv.s, v = hsv.v;
-	var ret = [];
-	var modification = 1 / results;
-
+	let hsv = new tinycolor(color).toHsv(),
+	    h = hsv.h, s = hsv.s, v = hsv.v,
+	    ret = [],
+	    modification = 1 / results;
+	
 	while (results--) {
 		ret.push(new tinycolor({ h: h, s: s, v: v}));
 		v = (v + modification) % 1;
 	}
-
 	return ret;
 }
 
-// Utility Functions
-// ---------------------
+// --- Utility Functions
 
-tinycolor.mix = function(color1, color2, amount) {
+exports.mix = function(color1, color2, amount) {
 	amount = (amount === 0) ? 0 : (amount || 50);
-
-	var rgb1 = new tinycolor(color1).toRgb();
-	var rgb2 = new tinycolor(color2).toRgb();
-
-	var p = amount / 100;
-
-	var rgba = {
-		r: ((rgb2.r - rgb1.r) * p) + rgb1.r,
-		g: ((rgb2.g - rgb1.g) * p) + rgb1.g,
-		b: ((rgb2.b - rgb1.b) * p) + rgb1.b,
-		a: ((rgb2.a - rgb1.a) * p) + rgb1.a
-	};
-
+	let rgb1 = new tinycolor(color1).toRgb(),
+	    rgb2 = new tinycolor(color2).toRgb(),
+	    p = amount / 100,
+	    rgba = {
+		    r: ((rgb2.r - rgb1.r) * p) + rgb1.r,
+		    g: ((rgb2.g - rgb1.g) * p) + rgb1.g,
+		    b: ((rgb2.b - rgb1.b) * p) + rgb1.b,
+		    a: ((rgb2.a - rgb1.a) * p) + rgb1.a
+	    };
+	
 	return new tinycolor(rgba);
 };
 
 
-// Readability Functions
-// ---------------------
-// <http://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef (WCAG Version 2)
-
-// `contrast`
-// Analyze the 2 colors and returns the color contrast defined by (WCAG Version 2)
-tinycolor.readability = function(color1, color2) {
-	var c1 = new tinycolor(color1);
-	var c2 = new tinycolor(color2);
+exports.readability = function(color1, color2) {
+	let c1 = new tinycolor(color1),
+	    c2 = new tinycolor(color2);
 	return (Math.max(c1.getLuminance(),c2.getLuminance())+0.05) / (Math.min(c1.getLuminance(),c2.getLuminance())+0.05);
 };
 
-// `isReadable`
-// Ensure that foreground and background color combinations meet WCAG2 guidelines.
-// The third argument is an optional Object.
-//	  the 'level' property states 'AA' or 'AAA' - if missing or invalid, it defaults to 'AA';
-//	  the 'size' property states 'large' or 'small' - if missing or invalid, it defaults to 'small'.
-// If the entire object is absent, isReadable defaults to {level:"AA",size:"small"}.
-
-// *Example*
-//	tinycolor.isReadable("#000", "#111") => false
-//	tinycolor.isReadable("#000", "#111",{level:"AA",size:"large"}) => false
-tinycolor.isReadable = function(color1, color2, wcag2) {
-	var readability = new tinycolor.readability(color1, color2);
-	var wcag2Parms, out;
-
-	out = false;
-
-	wcag2Parms = validateWCAG2Parms(wcag2);
+exports.isReadable = function(color1, color2, wcag2) {
+	let readability = new tinycolor.readability(color1, color2),
+	    wcag2Parms,
+	    out = false,
+	    wcag2Parms = validateWCAG2Parms(wcag2);
 	switch (wcag2Parms.level + wcag2Parms.size) {
 		case "AAsmall":
 		case "AAAlarge":
@@ -388,21 +360,11 @@ tinycolor.isReadable = function(color1, color2, wcag2) {
 	return out;
 
 };
-
-// `mostReadable`
-// Given a base color and a list of possible foreground or background
-// colors for that base, returns the most readable color.
-// Optionally returns Black or White if the most readable color is unreadable.
-// *Example*
-//	tinycolor.mostReadable(tinycolor.mostReadable("#123", ["#124", "#125"],{includeFallbackColors:false}).toHexString(); // "#112255"
-//	tinycolor.mostReadable(tinycolor.mostReadable("#123", ["#124", "#125"],{includeFallbackColors:true}).toHexString();  // "#ffffff"
-//	tinycolor.mostReadable("#a8015a", ["#faf3f3"],{includeFallbackColors:true,level:"AAA",size:"large"}).toHexString(); // "#faf3f3"
-//	tinycolor.mostReadable("#a8015a", ["#faf3f3"],{includeFallbackColors:true,level:"AAA",size:"small"}).toHexString(); // "#ffffff"
-tinycolor.mostReadable = function(baseColor, colorList, args) {
-	var bestColor = null;
-	var bestScore = 0;
-	var readability;
-	var includeFallbackColors, level, size ;
+exports.mostReadable = function(baseColor, colorList, args) {
+	let bestColor = null,
+	    bestScore = 0,
+	    readability,
+	    includeFallbackColors, level, size ;
 	args = args || {};
 	includeFallbackColors = args.includeFallbackColors ;
 	level = args.level;
@@ -410,19 +372,16 @@ tinycolor.mostReadable = function(baseColor, colorList, args) {
 
 	for (var i= 0; i < colorList.length ; i++) {
 		readability = new tinycolor.readability(baseColor, colorList[i]);
-		if (readability > bestScore) {
-			bestScore = readability;
-			bestColor = new tinycolor(colorList[i]);
-		}
+		if (readability > bestScore)
+			bestScore = readability,
+				bestColor = new tinycolor(colorList[i]);
 	}
-
-	if (new tinycolor(bestColor).isReadable(baseColor, bestColor, {"level":level,"size":size}) || !includeFallbackColors) {
+	if (new bestColor.isReadable(baseColor, bestColor, {"level":level,"size":size}) 
+	    || !includeFallbackColors)
 		return bestColor;
-	}
-	else {
+	else
 		args.includeFallbackColors=false;
 		return new tinycolor.mostReadable(baseColor,["#fff", "#000"],args);
-	}
 };
 
 let names = tinycolor.names,
@@ -445,7 +404,7 @@ function bound01(n, max) {
 		n = "100%";
 	let processPercent = isPercentage(n);
 	
-	n = Math.min(max, mathMax(0, parseFloat(n)));
+	n = Math.min(max, Math.max(0, parseFloat(n)));
 	
 	if (processPercent)
 		n = parseInt(n * max, 10) / 100;
@@ -454,7 +413,7 @@ function bound01(n, max) {
 	return (n % max) / parseFloat(max);
 }
 function clamp01(val) {
-	return Math.min(1, mathMax(0, val));
+	return Math.min(1, Math.max(0, val));
 }
 function parseIntFromHex(val) {
 	return parseInt(val, 16);
