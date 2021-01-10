@@ -170,6 +170,66 @@ class TinyColor {
 		this.hsl.h = hue < 0 ? 360 + hue : hue;
 		return new TinyColor(this.hsl);
 	}
+	// --- Combination Functions
+	
+	complement() {
+		this.hsl.h = (this.hsl.h + 180) % 360;
+		return new TinyColor(this.hsl);
+	}
+	
+	triad() {
+		return [
+			new TinyColor(this),
+			new TinyColor({ h: (this.hsl.h + 120) % 360, s: this.hsl.s, l: this.hsl.l }),
+			new TinyColor({ h: (this.hsl.h + 240) % 360, s: this.hsl.s, l: this.hsl.l })
+		];
+	}
+
+	tetrad() {
+		return [
+			new TinyColor(this),
+			new TinyColor({ h: (this.hsl.h + 90) % 360, s: this.hsl.s, l: this.hsl.l }),
+			new TinyColor({ h: (this.hsl.h + 180) % 360, s: this.hsl.s, l: this.hsl.l }),
+			new TinyColor({ h: (this.hsl.h + 270) % 360, s: this.hsl.s, l: this.hsl.l })
+		];
+	}
+	
+	splitcomplement() {
+		return [
+			new TinyColor(this),
+			new TinyColor({ h: (this.hsl.h + 72) % 360, s: this.hsl.s, l: this.hsl.l}),
+			new TinyColor({ h: (this.hsl.h + 216) % 360, s: this.hsl.s, l: this.hsl.l})
+		];
+	}
+	analogous(results, slices) {
+		results = results || 6;
+		slices = slices || 30;
+		
+		let hsl = new TinyColor(this.hsl),
+		    part = 360 / slices,
+		    ret = [new TinyColor(hsl)];
+
+		for (hsl.h = ((hsl.h - (part * results >> 1)) + 720) % 360; --results; ) {
+			hsl.h = (hsl.h + part) % 360;
+			ret.push(new TinyColor(hsl));
+		}
+		return ret;
+	}
+	monochromatic(results) {
+		results = results || 6;
+		let h = this.hsv.h,
+		    s = this.hsv.s,
+		    v = this.hsv.v,
+		    ret = [],
+		    modification = 1 / results;
+
+		while (results--) {
+			ret.push(new TinyColor({ h: h, s: s, v: v}));
+			v = (v + modification) % 1;
+		}
+		return ret;
+	}
+
 }
 
 function isValidCSSUnit(color) {
@@ -191,73 +251,6 @@ function validateWCAG2Parms(parms) {
 		size: size
 	};
 }
-// --- Combination Functions
-function complement(color) {
-	let hsl = new TinyColor(color).hsl
-	hsl.h = (hsl.h + 180) % 360;
-	return new TinyColor(hsl);
-}
-
-function triad(color) {
-	let hsl = new TinyColor(color).hsl,
-	    h = hsl.h;
-	return [
-		new TinyColor(color),
-		new TinyColor({ h: (h + 120) % 360, s: hsl.s, l: hsl.l }),
-		new TinyColor({ h: (h + 240) % 360, s: hsl.s, l: hsl.l })
-	];
-}
-
-function tetrad(color) {
-	let hsl = new TinyColor(color).toHsl(),
-	    h = hsl.h;
-	return [
-		new TinyColor(color),
-		new TinyColor({ h: (h + 90) % 360, s: hsl.s, l: hsl.l }),
-		new TinyColor({ h: (h + 180) % 360, s: hsl.s, l: hsl.l }),
-		new TinyColor({ h: (h + 270) % 360, s: hsl.s, l: hsl.l })
-	];
-}
-
-function splitcomplement(color) {
-	let hsl = new TinyColor(color).toHsl(),
-	    h = hsl.h;
-	return [
-		new TinyColor(color),
-		new TinyColor({ h: (h + 72) % 360, s: hsl.s, l: hsl.l}),
-		new TinyColor({ h: (h + 216) % 360, s: hsl.s, l: hsl.l})
-	];
-}
-
-function analogous(color, results, slices) {
-	results = results || 6;
-	slices = slices || 30;
-
-	let hsl = new TinyColor(color).hsl,
-	    part = 360 / slices,
-	    ret = [new TinyColor(color)];
-
-	for (hsl.h = ((hsl.h - (part * results >> 1)) + 720) % 360; --results; ) {
-		hsl.h = (hsl.h + part) % 360;
-		ret.push(new TinyColor(hsl));
-	}
-	return ret;
-}
-
-function monochromatic(color, results) {
-	results = results || 6;
-	let hsv = new TinyColor(color).hsv,
-	    h = hsv.h, s = hsv.s, v = hsv.v,
-	    ret = [],
-	    modification = 1 / results;
-	
-	while (results--) {
-		ret.push(new TinyColor({ h: h, s: s, v: v}));
-		v = (v + modification) % 1;
-	}
-	return ret;
-}
-
 function readability (color1, color2) {
 	let c1 = new TinyColor(color1),
 	    c2 = new TinyColor(color2);
