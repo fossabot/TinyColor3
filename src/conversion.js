@@ -1,14 +1,28 @@
+function bound01(n, max) {
+	if (isOnePointZero(n)) 
+		n = "100%";
+	let processPercent = isPercentage(n);
+	n = mathMin(max, mathMax(0, parseFloat(n)));
+	if (processPercent)
+		n = parseInt(n * max, 10) / 100;
+	if ((Math.abs(n - max) < 0.000001))
+		return 1;
+	return (n % max) / parseFloat(max);
+}
+
 /*
-  --- Conversion Functions
+  --- Conversion Functions ---
 */
+
 exports.rgbToRgb = function (r, g, b) {
 	return {
 		r: bound01(r, 255) * 255,
 		g: bound01(g, 255) * 255,
 		b: bound01(b, 255) * 255
 	};
-}
-rgbToHsl(r, g, b) {
+};
+
+exports.rgbToHsl = function (r, g, b) {
 	r = bound01(r, 255);
 	g = bound01(g, 255);
 	b = bound01(b, 255);
@@ -35,7 +49,8 @@ rgbToHsl(r, g, b) {
 
 	return { h: h, s: s, l: l };
 }
-function hslToRgb(h, s, l) {
+
+exports.hslToRgb = function (h, s, l) {
 	let r, g, b, q, p;
 	h = bound01(h, 360);
 	s = bound01(s, 100);
@@ -65,7 +80,8 @@ function hslToRgb(h, s, l) {
 			b = hue2rgb(p, q, h - 1/3);
 	return { r: r * 255, g: g * 255, b: b * 255 };
 }
-function rgbToHsv(r, g, b) {
+
+exports.rgbToHsv = function (r, g, b) {
 	r = bound01(r, 255);
 	g = bound01(g, 255);
 	b = bound01(b, 255);
@@ -92,7 +108,7 @@ function rgbToHsv(r, g, b) {
 	}
 	return { h: h, s: s, v: v };
 }
- function hsvToRgb(h, s, v) {
+ exports.hsvToRgb = function (h, s, v) {
 
 	h = bound01(h, 360) * 6;
 	s = bound01(s, 100);
@@ -110,7 +126,7 @@ function rgbToHsv(r, g, b) {
 
 	return { r: r * 255, g: g * 255, b: b * 255 };
 }
-function rgbToHex(r, g, b, allow3Char) {
+exports.rgbToHex = function (r, g, b, allow3Char) {
 
 	let hex = [
 		pad2(Math.round(r).toString(16)),
@@ -125,7 +141,7 @@ function rgbToHex(r, g, b, allow3Char) {
 
 	return hex.join("");
 }
-function rgbaToHex(r, g, b, a, allow4Char) {
+exports.rgbaToHex = function (r, g, b, a, allow4Char) {
 
 	let hex = [
 		pad2(Math.round(r).toString(16)),
@@ -141,7 +157,7 @@ function rgbaToHex(r, g, b, a, allow4Char) {
 		return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0) + hex[3].charAt(0);
 	return hex.join("");
 }
-function rgbaToArgbHex(r, g, b, a) {
+exports.rgbaToArgbHex = function (r, g, b, a) {
 	let hex = [
 		pad2(convertDecimalToHex(a)),
 		pad2(Math.round(r).toString(16)),
@@ -150,7 +166,7 @@ function rgbaToArgbHex(r, g, b, a) {
 	];
 	return hex.join("");
 }
-function rgbToCmyk(r, g, b) {
+exports.rgbToCmyk = function (r, g, b) {
 	var R = r/255,
 	    G = g/255,
 	    B = b/255,
