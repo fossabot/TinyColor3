@@ -95,7 +95,7 @@ class TinyColor {
 		this.cmyk = rgbToCmyk(this.red, this.green, this.blue);
 		this.cmykString = `cmyk(${Math.round(this.cmyk.c) * 100}%, ${Math.round(this.cmyk.m) * 100}%, ${Math.round(this.cmyk.y) * 100}%, ${Math.round(this.cmyk.k) * 100})`;
 	}
-	_applyModification: function(fn, args) {
+	_applyModification (fn, args) {
 		let color = fn.apply(null, [this].concat([].slice.call(args)));
 		this.red = color.red;
 		this.green = color.green;
