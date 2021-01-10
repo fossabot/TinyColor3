@@ -17,10 +17,10 @@ class TinyColor {
 	constructor(color, opts) {
 		color = (color) ? color : '';
 		opts = opts || { };
-		if (color instanceof tinycolor)
+		if (color instanceof TinyColor)
 			return color;
-		if (!(this instanceof tinycolor))
-			return new tinycolor(color, opts);
+		if (!(this instanceof TinyColor))
+			return new TinyColor(color, opts);
 		
 		let rgb = inputToRGB(color),
 		    hsl = rgbToHsl(this._r, this._g, this._b),
