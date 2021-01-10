@@ -273,7 +273,6 @@ exports.readability = function(color1, color2) {
 
 exports.isReadable = function(color1, color2, wcag2) {
 	let readability = new tinycolor.readability(color1, color2),
-	    wcag2Parms,
 	    out = false,
 	    wcag2Parms = validateWCAG2Parms(wcag2);
 	switch (wcag2Parms.level + wcag2Parms.size) {
