@@ -336,6 +336,30 @@ function flip(o) {
 			flipped[o[i]] = i;
 	return flipped;
 }
+
+const matchers = (function() {
+    let CSS_INTEGER = "[-\\+]?\\d+%?",
+	CSS_NUMBER = "[-\\+]?\\d*\\.\\d+%?",
+	CSS_UNIT = "(?:" + CSS_NUMBER + ")|(?:" + CSS_INTEGER + ")",
+	PERMISSIVE_MATCH3 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?",
+	PERMISSIVE_MATCH4 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?";
+
+    return {
+        CSS_UNIT: new RegExp(CSS_UNIT),
+        rgb: new RegExp("rgb" + PERMISSIVE_MATCH3),
+        rgba: new RegExp("rgba" + PERMISSIVE_MATCH4),
+        hsl: new RegExp("hsl" + PERMISSIVE_MATCH3),
+        hsla: new RegExp("hsla" + PERMISSIVE_MATCH4),
+        hsv: new RegExp("hsv" + PERMISSIVE_MATCH3),
+        hsva: new RegExp("hsva" + PERMISSIVE_MATCH4),
+        hex3: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+        hex6: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+        hex4: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+        hex8: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+    };
+})();
+
+
 function boundAlpha(a) {
 	a = parseFloat(a);
 	if (isNaN(a) || a < 0 || a > 1)
@@ -373,11 +397,7 @@ function stringInputToObject(color) {
 		.replace(trimLeft,'')
 		.replace(trimRight, '')
 		.toLowerCase();
-	let named = false,
-		match;
-	if (names[color])
-		color = names[color],
-			named = true;
+	let match;
 	else if (color == 'transparent')
 		return { r: 0, g: 0, b: 0, a: 0, format: "name" };
 	if ((match = matchers.rgb.exec(color)))
