@@ -12,7 +12,8 @@ class TinyColor {
 		if (typeof color == "string")
 			if (color == "random")
 				color = ((1 << 24) * Math.random() | 0).toString(16)
-		color = (color) ? color : '';
+		if (typeof color == "undefined")
+			throw new ReferenceError("Color was not defined.....")
 		opts = opts || { };
 		if (color instanceof TinyColor)
 			return color;
@@ -464,6 +465,10 @@ function inputToRGB(color) {
 		l = null,
 		ok = false,
 		format = false;
+	
+	if (typeof color == "string") 
+		color = stringInputToObject(color);
+
 	if (typeof color == "object") {
 		if (isValidCSSUnit(color.r)
 		    && isValidCSSUnit(color.g)
