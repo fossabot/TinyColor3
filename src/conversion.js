@@ -9,7 +9,7 @@ function bound01(n, max) {
 		return 1;
 	return (n % max) / parseFloat(max);
 }
-
+exports.bound01 = bound01;
 /*
   --- Conversion Functions ---
 */
