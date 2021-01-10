@@ -1,6 +1,9 @@
 function isOnePointZero(n) {
     return typeof n == "string" && n.indexOf('.') != -1 && parseFloat(n) === 1;
 }
+function pad2(c) {
+	return c.length == 1 ? '0' + c : '' + c;
+}
 function isPercentage(n) {
     return typeof n === "string" && n.indexOf('%') != -1;
 }
