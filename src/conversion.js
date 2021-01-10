@@ -1,8 +1,17 @@
+function isOnePointZero(n) {
+    return typeof n == "string" && n.indexOf('.') != -1 && parseFloat(n) === 1;
+}
+function convertDecimalToHex(d) {
+	return Math.round(parseFloat(d) * 255).toString(16);
+}
+function convertHexToDecimal(h) {
+	return (parseIntFromHex(h) / 255);
+}
 function bound01(n, max) {
 	if (isOnePointZero(n)) 
 		n = "100%";
 	let processPercent = isPercentage(n);
-	n = mathMin(max, mathMax(0, parseFloat(n)));
+	n = mathMin(max, Math.max(0, parseFloat(n)));
 	if (processPercent)
 		n = parseInt(n * max, 10) / 100;
 	if ((Math.abs(n - max) < 0.000001))
@@ -170,7 +179,7 @@ exports.rgbToCmyk = function (r, g, b) {
 	var R = r/255,
 	    G = g/255,
 	    B = b/255,
-	    K = 1-Math.max(R, G, B);
+	    K = 1- Math.max(R, G, B);
 	return {
 		C: (1-R-K) / (1-K),
 		M: (1-B-K) / (1-K),
