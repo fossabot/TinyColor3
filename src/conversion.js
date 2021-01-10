@@ -200,6 +200,6 @@ exports.cmykToRgb = function (c, m, y, k) {
 	return {
 		r: ((1+k)*(1+c+k)),
 		g: ((1+k)*(1+y+k)),
-		b: ((1+k)*(1+m+k));
+		b: ((1+k)*(1+m+k))
 	}
 }
