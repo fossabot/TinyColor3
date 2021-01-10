@@ -9,6 +9,9 @@ let tinyCounter = 0,
 colorNames.forEach(color => names[color.name] = color.hex)
 class TinyColor {
 	constructor(color, opts) {
+		if (typeof color == "string")
+			if (color == "random")
+				color = ((1 << 24) * Math.random() | 0).toString(16)
 		color = (color) ? color : '';
 		opts = opts || { };
 		if (color instanceof TinyColor)
@@ -40,7 +43,7 @@ class TinyColor {
 		this._tc_id = tinyCounter++;
 		
 		this.brightness = (this.red * 299 + this.green * 587 + this.blue * 114) / 1000;
-		this.isDark = (this.getBrightness() < 128);
+		this.isDark = (this.brightness() < 128);
 		this.isLight = (!this.isDark);
 		
 		this.hex = rgbToHex(this.red, this.green, this.blue);
@@ -92,19 +95,73 @@ class TinyColor {
 		this.cmyk = rgbToCmyk(this.red, this.green, this.blue);
 		this.cmykString = `cmyk(${Math.round(this.cmyk.c) * 100}%, ${Math.round(this.cmyk.m) * 100}%, ${Math.round(this.cmyk.y) * 100}%, ${Math.round(this.cmyk.k) * 100})`;
 	}
-	fromRatio () {
-		if (typeof this.color == "object") {
-			let newColor = {};
-			for (var i in this.color)
-				if (this.color.hasOwnProperty(i))
-					if (i === "a")
-						newColor[i] = this.color[i];
-					else
-						newColor[i] = convertToPercentage(this.color[i]);
-			let color = newColor;
-		}
-		return new TinyColor(color, this.opts);
+	
+	equals (color) {
+		if (!color)
+			return false;
+		return this.rgbString == new TinyColor(color).rgbString;
+	}
+	
+	mix(color, amount) {
+		amount = (amount === 0) ? 0 : (amount || 50);
+		let rgb = this.rgb,
+		    rgb1 = new TinyColor(color).rgb,
+		    p = amount / 100,
+		    rgba = {
+			    r: ((rgb1.r - rgb.r) * p) + rgb.r,
+			    g: ((rgb1.g - rgb.g) * p) + rgb.g,
+			    b: ((rgb1.b - rgb.b) * p) + rgb.b,
+			    a: ((rgb1.a - rgb.a) * p) + rgb.a
+		    };
+	
+		return new TinyColor(rgba)
 	};
+	
+	// --- Modification
+	
+	desaturate(amount) {
+		amount = (amount === 0) ? 0 : (amount || 10);
+		this.hsl.s -= amount / 100;
+		this.hsl.s = clamp01(this.hsl.s);
+		return new TinyColor(this.hsl);
+	}
+	saturate(amount) {
+		amount = (amount === 0) ? 0 : (amount || 10);
+		this.hsl.s += amount / 100;
+		this.hsl.s = clamp01(this.hsl.s);
+		return new TinyColor(this.hsl);
+	}
+	
+	greyscale() {
+		return this.desaturate(100);
+	}
+	
+	lighten (amount) {
+		amount = (amount === 0) ? 0 : (amount || 10);
+		this.hsl.l += amount / 100;
+		this.hsl.l = clamp01(this.hsl.l);
+		return new TinyColor(this.hsl);
+	}
+	
+	brighten(amount) {
+		amount = (amount === 0) ? 0 : (amount || 10);
+		this.rgb.r = Math.max(0, Math.min(255, this.rgb.r - Math.round(255 * - (amount / 100))));
+		this.rgb.g = Math.max(0, Math.min(255, this.rgb.g - Math.round(255 * - (amount / 100))));
+		this.rgb.b = Math.max(0, Math.min(255, this.rgb.b - Math.round(255 * - (amount / 100))));
+		return new TinyColor(rgb);
+	}
+	darken (amount) {
+		amount = (amount === 0) ? 0 : (amount || 10);
+		this.hsl.l -= amount / 100;
+		this.hsl.l = clamp01(this.hsl.l);
+		return new TinyColor(this.hsl);
+	}
+	
+	spin(amount) {
+		let hue = (this.hsl.h + amount) % 360;
+		this.hsl.h = hue < 0 ? 360 + hue : hue;
+		return new TinyColor(this.hsl);
+	}
 }
 
 function isValidCSSUnit(color) {
@@ -126,79 +183,15 @@ function validateWCAG2Parms(parms) {
 		size: size
 	};
 }
-exports.equals = function (color1, color2) {
-	if (!color1 || !color2)
-		return false;
-	return new TinyColor(color1).toRgbString() == new TinyColor(color2).toRgbString();
-};
-
-exports.random = function() {
-	return new TinyColor.fromRatio({
-		r: mathRandom(),
-		g: mathRandom(),
-		b: mathRandom()
-	});
-};
-function desaturate(color, amount) {
-	amount = (amount === 0) ? 0 : (amount || 10);
-	let hsl = TinyColor(color).toHsl();
-	hsl.s -= amount / 100;
-	hsl.s = clamp01(hsl.s);
-	return new TinyColor(hsl);
-}
-
-function saturate(color, amount) {
-	amount = (amount === 0) ? 0 : (amount || 10);
-	var hsl = TinyColor(color).toHsl();
-	hsl.s += amount / 100;
-	hsl.s = clamp01(hsl.s);
-	return new TinyColor(hsl);
-}
-
-function greyscale(color) {
-	return new TinyColor(color).desaturate(100);
-}
-
-function lighten (color, amount) {
-	amount = (amount === 0) ? 0 : (amount || 10);
-	let hsl = new TinyColor(color).toHsl();
-	hsl.l += amount / 100;
-	hsl.l = clamp01(hsl.l);
-	return new TinyColor(hsl);
-}
-
-function brighten(color, amount) {
-	amount = (amount === 0) ? 0 : (amount || 10);
-	let rgb = new TinyColor(color).toRgb();
-	rgb.r = Math.max(0, Math.min(255, rgb.r - Math.round(255 * - (amount / 100))));
-	rgb.g = Math.max(0, Math.min(255, rgb.g - Math.round(255 * - (amount / 100))));
-	rgb.b = Math.max(0, Math.min(255, rgb.b - Math.round(255 * - (amount / 100))));
-	return new TinyColor(rgb);
-}
-
-function darken (color, amount) {
-	amount = (amount === 0) ? 0 : (amount || 10);
-	let hsl = new TinyColor(color).toHsl();
-	hsl.l -= amount / 100;
-	hsl.l = clamp01(hsl.l);
-	return new TinyColor(hsl);
-}
-function spin(color, amount) {
-	let hsl = new TinyColor(color).toHsl(),
-	    hue = (hsl.h + amount) % 360;
-	hsl.h = hue < 0 ? 360 + hue : hue;
-	return new TinyColor(hsl);
-}
-
 // --- Combination Functions
 function complement(color) {
-	let hsl = new TinyColor(color).toHsl();
+	let hsl = new TinyColor(color).hsl
 	hsl.h = (hsl.h + 180) % 360;
 	return new TinyColor(hsl);
 }
 
 function triad(color) {
-	let hsl = new TinyColor(color).toHsl(),
+	let hsl = new TinyColor(color).hsl,
 	    h = hsl.h;
 	return [
 		new TinyColor(color),
@@ -232,7 +225,7 @@ function analogous(color, results, slices) {
 	results = results || 6;
 	slices = slices || 30;
 
-	let hsl = new TinyColor(color).toHsl(),
+	let hsl = new TinyColor(color).hsl,
 	    part = 360 / slices,
 	    ret = [new TinyColor(color)];
 
@@ -245,7 +238,7 @@ function analogous(color, results, slices) {
 
 function monochromatic(color, results) {
 	results = results || 6;
-	let hsv = new TinyColor(color).toHsv(),
+	let hsv = new TinyColor(color).hsv,
 	    h = hsv.h, s = hsv.s, v = hsv.v,
 	    ret = [],
 	    modification = 1 / results;
@@ -256,24 +249,6 @@ function monochromatic(color, results) {
 	}
 	return ret;
 }
-
-// --- Utility Functions
-
-exports.mix = function(color1, color2, amount) {
-	amount = (amount === 0) ? 0 : (amount || 50);
-	let rgb1 = new TinyColor(color1).toRgb(),
-	    rgb2 = new TinyColor(color2).toRgb(),
-	    p = amount / 100,
-	    rgba = {
-		    r: ((rgb2.r - rgb1.r) * p) + rgb1.r,
-		    g: ((rgb2.g - rgb1.g) * p) + rgb1.g,
-		    b: ((rgb2.b - rgb1.b) * p) + rgb1.b,
-		    a: ((rgb2.a - rgb1.a) * p) + rgb1.a
-	    };
-	
-	return new TinyColor(rgba);
-};
-
 
 function readability (color1, color2) {
 	let c1 = new TinyColor(color1),
