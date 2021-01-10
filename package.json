@@ -11,7 +11,7 @@
     "tinycolor"
   ],
   "author": "Jay Rizuri <jayrizuri@gmail.com> (http://samidb.xyz/)",
-  "main": "./tinycolor.js",
+  "main": "./src/TinyColor.js",
   "engines": {
     "node": "*"
   }
