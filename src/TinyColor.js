@@ -477,6 +477,13 @@ function inputToRGB(color) {
 				rgb = hsvToRgb(color.h, s, v),
 				ok = true,
 				format = "hsv";
+		else if (isValidCSSUnit(color.c) 
+			 && isValidCSSUnit(color.m) 
+			 && isValidCSSUnit(color.y) 
+			 && isValidCSSUnit(color.k))
+			rgb = cmykToRgb(color.c, color.m, color.y, color.k),
+				ok = true,
+				format = "cmyk";
 		else if (isValidCSSUnit(color.h) 
 			 && isValidCSSUnit(color.s) 
 			 && isValidCSSUnit(color.l))
