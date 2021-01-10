@@ -306,12 +306,12 @@ exports.mostReadable = function(baseColor, colorList, args) {
 			bestScore = readability,
 				bestColor = new tinycolor(colorList[i]);
 	}
-	if (new bestColor.isReadable(baseColor, bestColor, {"level":level,"size":size}) 
+	if (isReadable(baseColor, bestColor, {"level":level,"size":size}) 
 	    || !includeFallbackColors)
 		return bestColor;
 	else
 		args.includeFallbackColors=false;
-		return new tinycolor.mostReadable(baseColor,["#fff", "#000"],args);
+		return mostReadable(baseColor,["#fff", "#000"],args);
 };
 
 let names = tinycolor.names,
