@@ -135,7 +135,7 @@ function validateWCAG2Parms(parms) {
 exports.equals = function (color1, color2) {
 	if (!color1 || !color2)
 		return false;
-	return new tinycolor(color1).toRgbString() == new tinycolor(color2).toRgbString();
+	return new TinyColor(color1).toRgbString() == new TinyColor(color2).toRgbString();
 };
 
 exports.random = function() {
@@ -147,90 +147,90 @@ exports.random = function() {
 };
 function desaturate(color, amount) {
 	amount = (amount === 0) ? 0 : (amount || 10);
-	let hsl = tinycolor(color).toHsl();
+	let hsl = TinyColor(color).toHsl();
 	hsl.s -= amount / 100;
 	hsl.s = clamp01(hsl.s);
-	return new tinycolor(hsl);
+	return new TinyColor(hsl);
 }
 
 function saturate(color, amount) {
 	amount = (amount === 0) ? 0 : (amount || 10);
-	var hsl = tinycolor(color).toHsl();
+	var hsl = TinyColor(color).toHsl();
 	hsl.s += amount / 100;
 	hsl.s = clamp01(hsl.s);
-	return new tinycolor(hsl);
+	return new TinyColor(hsl);
 }
 
 function greyscale(color) {
-	return new tinycolor(color).desaturate(100);
+	return new TinyColor(color).desaturate(100);
 }
 
 function lighten (color, amount) {
 	amount = (amount === 0) ? 0 : (amount || 10);
-	let hsl = new tinycolor(color).toHsl();
+	let hsl = new TinyColor(color).toHsl();
 	hsl.l += amount / 100;
 	hsl.l = clamp01(hsl.l);
-	return new tinycolor(hsl);
+	return new TinyColor(hsl);
 }
 
 function brighten(color, amount) {
 	amount = (amount === 0) ? 0 : (amount || 10);
-	let rgb = new tinycolor(color).toRgb();
+	let rgb = new TinyColor(color).toRgb();
 	rgb.r = Math.max(0, Math.min(255, rgb.r - Math.round(255 * - (amount / 100))));
 	rgb.g = Math.max(0, Math.min(255, rgb.g - Math.round(255 * - (amount / 100))));
 	rgb.b = Math.max(0, Math.min(255, rgb.b - Math.round(255 * - (amount / 100))));
-	return new tinycolor(rgb);
+	return new TinyColor(rgb);
 }
 
 function darken (color, amount) {
 	amount = (amount === 0) ? 0 : (amount || 10);
-	let hsl = new tinycolor(color).toHsl();
+	let hsl = new TinyColor(color).toHsl();
 	hsl.l -= amount / 100;
 	hsl.l = clamp01(hsl.l);
-	return new tinycolor(hsl);
+	return new TinyColor(hsl);
 }
 function spin(color, amount) {
-	let hsl = new tinycolor(color).toHsl(),
+	let hsl = new TinyColor(color).toHsl(),
 	    hue = (hsl.h + amount) % 360;
 	hsl.h = hue < 0 ? 360 + hue : hue;
-	return new tinycolor(hsl);
+	return new TinyColor(hsl);
 }
 
 // --- Combination Functions
 function complement(color) {
-	let hsl = new tinycolor(color).toHsl();
+	let hsl = new TinyColor(color).toHsl();
 	hsl.h = (hsl.h + 180) % 360;
-	return new tinycolor(hsl);
+	return new TinyColor(hsl);
 }
 
 function triad(color) {
-	let hsl = new tinycolor(color).toHsl(),
+	let hsl = new TinyColor(color).toHsl(),
 	    h = hsl.h;
 	return [
-		new tinycolor(color),
-		new tinycolor({ h: (h + 120) % 360, s: hsl.s, l: hsl.l }),
-		new tinycolor({ h: (h + 240) % 360, s: hsl.s, l: hsl.l })
+		new TinyColor(color),
+		new TinyColor({ h: (h + 120) % 360, s: hsl.s, l: hsl.l }),
+		new TinyColor({ h: (h + 240) % 360, s: hsl.s, l: hsl.l })
 	];
 }
 
 function tetrad(color) {
-	let hsl = new tinycolor(color).toHsl(),
+	let hsl = new TinyColor(color).toHsl(),
 	    h = hsl.h;
 	return [
-		new tinycolor(color),
-		new tinycolor({ h: (h + 90) % 360, s: hsl.s, l: hsl.l }),
-		new tinycolor({ h: (h + 180) % 360, s: hsl.s, l: hsl.l }),
-		new tinycolor({ h: (h + 270) % 360, s: hsl.s, l: hsl.l })
+		new TinyColor(color),
+		new TinyColor({ h: (h + 90) % 360, s: hsl.s, l: hsl.l }),
+		new TinyColor({ h: (h + 180) % 360, s: hsl.s, l: hsl.l }),
+		new TinyColor({ h: (h + 270) % 360, s: hsl.s, l: hsl.l })
 	];
 }
 
 function splitcomplement(color) {
-	let hsl = new tinycolor(color).toHsl(),
+	let hsl = new TinyColor(color).toHsl(),
 	    h = hsl.h;
 	return [
-		new tinycolor(color),
-		new tinycolor({ h: (h + 72) % 360, s: hsl.s, l: hsl.l}),
-		new tinycolor({ h: (h + 216) % 360, s: hsl.s, l: hsl.l})
+		new TinyColor(color),
+		new TinyColor({ h: (h + 72) % 360, s: hsl.s, l: hsl.l}),
+		new TinyColor({ h: (h + 216) % 360, s: hsl.s, l: hsl.l})
 	];
 }
 
@@ -238,26 +238,26 @@ function analogous(color, results, slices) {
 	results = results || 6;
 	slices = slices || 30;
 
-	let hsl = new tinycolor(color).toHsl(),
+	let hsl = new TinyColor(color).toHsl(),
 	    part = 360 / slices,
-	    ret = [new tinycolor(color)];
+	    ret = [new TinyColor(color)];
 
 	for (hsl.h = ((hsl.h - (part * results >> 1)) + 720) % 360; --results; ) {
 		hsl.h = (hsl.h + part) % 360;
-		ret.push(new tinycolor(hsl));
+		ret.push(new TinyColor(hsl));
 	}
 	return ret;
 }
 
 function monochromatic(color, results) {
 	results = results || 6;
-	let hsv = new tinycolor(color).toHsv(),
+	let hsv = new TinyColor(color).toHsv(),
 	    h = hsv.h, s = hsv.s, v = hsv.v,
 	    ret = [],
 	    modification = 1 / results;
 	
 	while (results--) {
-		ret.push(new tinycolor({ h: h, s: s, v: v}));
+		ret.push(new TinyColor({ h: h, s: s, v: v}));
 		v = (v + modification) % 1;
 	}
 	return ret;
@@ -267,8 +267,8 @@ function monochromatic(color, results) {
 
 exports.mix = function(color1, color2, amount) {
 	amount = (amount === 0) ? 0 : (amount || 50);
-	let rgb1 = new tinycolor(color1).toRgb(),
-	    rgb2 = new tinycolor(color2).toRgb(),
+	let rgb1 = new TinyColor(color1).toRgb(),
+	    rgb2 = new TinyColor(color2).toRgb(),
 	    p = amount / 100,
 	    rgba = {
 		    r: ((rgb2.r - rgb1.r) * p) + rgb1.r,
@@ -277,13 +277,13 @@ exports.mix = function(color1, color2, amount) {
 		    a: ((rgb2.a - rgb1.a) * p) + rgb1.a
 	    };
 	
-	return new tinycolor(rgba);
+	return new TinyColor(rgba);
 };
 
 
 function readability (color1, color2) {
-	let c1 = new tinycolor(color1),
-	    c2 = new tinycolor(color2);
+	let c1 = new TinyColor(color1),
+	    c2 = new TinyColor(color2);
 	return (Math.max(c1.getLuminance(),c2.getLuminance())+0.05) / (Math.min(c1.getLuminance(),c2.getLuminance())+0.05);
 };
 
@@ -320,7 +320,7 @@ exports.mostReadable = function(baseColor, colorList, args) {
 		readability = readability(baseColor, colorList[i]);
 		if (readability > bestScore)
 			bestScore = readability,
-				bestColor = new tinycolor(colorList[i]);
+				bestColor = new TinyColor(colorList[i]);
 	}
 	if (isReadable(baseColor, bestColor, {"level":level,"size":size}) 
 	    || !includeFallbackColors)
@@ -329,9 +329,6 @@ exports.mostReadable = function(baseColor, colorList, args) {
 		args.includeFallbackColors=false;
 		return mostReadable(baseColor,["#fff", "#000"],args);
 };
-
-let names = tinycolor.names,
-    hexNames = tinycolor.hexNames;
 function flip(o) {
 	let flipped = { };
 	for (var i in o)
