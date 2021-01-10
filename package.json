@@ -1,7 +1,7 @@
 
 {
   "version": "1.0.0",
-  "name": "TinyColor3",
+  "name": "tinycolor/3",
   "description": "Fast Color Parsing and Manipulation",
   "url": "http://github.com/JayRizuri/TinyColor3",
   "license": "MIT",
