@@ -187,9 +187,9 @@ exports.rgbToCmyk = function (r, g, b) {
 	    B = b/255,
 	    K = 1- Math.max(R, G, B);
 	return {
-		C: (1-R-K) / (1-K),
-		M: (1-B-K) / (1-K),
-		Y: (1-G-K) / (1-K),
-		K: K
+		c: (1-R-K) / (1-K),
+		m: (1-B-K) / (1-K),
+		y: (1-G-K) / (1-K),
+		k: K
 	};
 }
