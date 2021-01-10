@@ -94,7 +94,7 @@ class TinyColor {
 			`hsva(${Math.round(hsv.h * 360)}%, ${Math.round(hsv.s * 100)}%, ${Math.round(hsv.l * 100)}%, ${this.roundAlpha})`;
 		
 		this.cmyk = rgbToCmyk(this.red, this.green, this.blue);
-		this.cmykString = `cmyk(${Math.round(this.cmyk.c) * 100}%, ${Math.round(this.cmyk.m) * 100}%, ${Math.round(this.cmyk.y) * 100}%, ${Math.round(this.cmyk.k) * 100})`;
+		this.cmykString = `cmyk(${Math.round(this.cmyk.c * 100)}%, ${Math.round(this.cmyk.m * 100)}%, ${Math.round(this.cmyk.y * 100)}%, ${Math.round(this.cmyk.k * 100))`;
 	}
 	_applyModification (fn, args) {
 		let color = fn.apply(null, [this].concat([].slice.call(args)));
