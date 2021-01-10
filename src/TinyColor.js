@@ -1,20 +1,53 @@
 const trimLeft = /^\s+/,
-      trimRight = /\s+$/,
+      trimRight = /\s+$/;
+let tinyCounter = 0;
 class TinyColor {
-	constructor() {
+	constructor(color, opts) {
+		color = (color) ? color : '';
+		opts = opts || { };
+		if (color instanceof tinycolor)
+			return color;
+		if (!(this instanceof tinycolor))
+			return new tinycolor(color, opts);
+		
+		let rgb = inputToRGB(color);
+		
+		this.originalInput = color;
+		this.red = rgb.r;
+		this.green = rgb.g;
+		this.blue = rgb.b;
+		this.alpha = rgb.a;
+		
+		this.roundAlpha = Math.round(100*this.alpha) / 100;
+		this.format = opts.format || rgb.format;
+		this.gradientType = opts.gradientType;
+		
+		if (this.red < 1)
+			this.red = Math.round(this.red);
+		if (this.green < 1)
+			this.green = Math.round(this.green);
+		if (this.blue < 1) 
+			this.blue = Math.round(this.blue);
+		
+		this.isValid = rgb.ok;
+		this._tc_id = tinyCounter++;
+		
+		this.brightness = (this.red * 299 + this.green * 587 + this.blue * 114) / 1000;
+		this.isDark = (this.getBrightness() < 128)
+		this.isLight = (!this.isDark)
 	}
-	fromRatio (color, opts) {
-		if (typeof color == "object") {
+	fromRatio () {
+		if (typeof this.color == "object") {
 			let newColor = {};
-			for (var i in color)
-				if (color.hasOwnProperty(i))
+			for (var i in this.color)
+				if (this.color.hasOwnProperty(i))
 					if (i === "a")
-						newColor[i] = color[i];
+						newColor[i] = this.color[i];
 					else
-						newColor[i] = convertToPercentage(color[i]);
-			color = newColor;
+						newColor[i] = convertToPercentage(this.color[i]);
+			let color = newColor;
 		}
-		return new TinyColor(color, opts);
+		return new TinyColor(color, this.opts);
 	};
 }
 
