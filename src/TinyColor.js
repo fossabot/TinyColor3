@@ -116,6 +116,22 @@ class TinyColor {
 function isValidCSSUnit(color) {
 	return !!matchers.CSS_UNIT.exec(color);
 }
+function validateWCAG2Parms(parms) {
+	parms = parms || {
+		level:"AA",
+		size:"small"
+	};
+	let level = (parms.level|| "AA").toUpperCase(),
+	    size = (parms.size || "small").toLowerCase();
+	if (level !== "AA" && level !== "AAA")
+		level = "AA";
+	if (size !== "small" && size !== "large")
+		size = "small";
+	return {
+		level: level, 
+		size: size
+	};
+}
 exports.equals = function (color1, color2) {
 	if (!color1 || !color2)
 		return false;
@@ -328,19 +344,6 @@ function boundAlpha(a) {
 	if (isNaN(a) || a < 0 || a > 1)
 		a = 1;
 	return a;
-}
-function bound01(n, max) {
-	if (isOnePointZero(n))
-		n = "100%";
-	let processPercent = isPercentage(n);
-	
-	n = Math.min(max, Math.max(0, parseFloat(n)));
-	
-	if (processPercent)
-		n = parseInt(n * max, 10) / 100;
-	if ((Math.abs(n - max) < 0.000001))
-		return 1;
-	return (n % max) / parseFloat(max);
 }
 function clamp01(val) {
 	return Math.min(1, Math.max(0, val));
