@@ -33,8 +33,21 @@ class TinyColor {
 		this._tc_id = tinyCounter++;
 		
 		this.brightness = (this.red * 299 + this.green * 587 + this.blue * 114) / 1000;
-		this.isDark = (this.getBrightness() < 128)
-		this.isLight = (!this.isDark)
+		this.isDark = (this.getBrightness() < 128);
+		this.isLight = (!this.isDark);
+		
+		this.hex = rgbToHex(this.red, this.green, this.blue);
+		this.hex8 = rgbToHex(this.red, this.green, this.blue, this.alpha);
+		
+		this.rgb = {
+			r: Math.round(this.red),
+			g: Math.round(this.green), 
+			b: Math.round(this.blue), 
+			a: this.alpha 
+		};
+		this.rgbString = (this.alpha == 1) ?
+			"rgb("  + mathRound(this.red) + ", " + mathRound(this.green) + ", " + mathRound(this.blue) + ")" : 
+			"rgba(" + mathRound(this.red) + ", " + mathRound(this.green) + ", " + mathRound(this.blue) + ", " + this.roundAlpha + ")";
 	}
 	fromRatio () {
 		if (typeof this.color == "object") {
